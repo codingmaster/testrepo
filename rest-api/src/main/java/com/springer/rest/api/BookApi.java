@@ -1,39 +1,53 @@
 package com.springer.rest.api;
 
 import com.springer.core.domain.Book;
-import com.springer.core.service.BaseService;
-import com.springer.core.service.BookService;
-import com.springer.rest.dto.BookDto;
+import com.springer.core.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/books")
-public class BookApi extends BaseApi<Book, BookDto> {
+public class BookApi {
 	
 	@Autowired
-	private BookService bookService;
+	private BookRepository bookRepository;
 	
-	@Override
-	protected BaseService<Book> getService()
-	{
-		return bookService;
-	}
-	
-	@Override
-	protected Class<BookDto> getDtoType()
-	{
-		return BookDto.class;
-	}
-	
-	@Override
-	protected Book toDomain(BookDto dto)
-	{
-		Book book = new Book();
-		book.setTitle(dto.getTitle());
-		book.setAuthor(dto.getAuthor());
-		book.setTopics(dto.getTopics());
+	@Transactional
+	@RequestMapping(method = RequestMethod.POST)
+	@ResponseStatus(value = HttpStatus.CREATED)
+	public Book create(@RequestBody Book book) {
+		book = bookRepository.save(book);
 		return book;
+	}
+	
+	@Transactional
+	@RequestMapping(value = "{id}", method = RequestMethod.PUT)
+	@ResponseStatus(value = HttpStatus.OK)
+	public void update(@PathVariable long id, @RequestBody Book book) {
+		bookRepository.save(book);
+	}
+	
+	@Transactional(readOnly = true)
+	@RequestMapping(value = "{id}", method = RequestMethod.GET)
+	@ResponseStatus(value = HttpStatus.OK)
+	public Book get(@PathVariable long id) throws InstantiationException, IllegalAccessException {
+		return bookRepository.findOne(id);
+	}
+	
+	@RequestMapping(method = RequestMethod.GET)
+	@ResponseStatus(value = HttpStatus.OK)
+	public List<Book> getAll(){
+		return bookRepository.findAll();
+	}
+	
+	@Transactional
+	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
+	@ResponseStatus(value = HttpStatus.OK)
+	public void delete(@PathVariable long id) {
+		bookRepository.delete(id);
 	}
 }

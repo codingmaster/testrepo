@@ -3,6 +3,7 @@ package com.springer.core;
 import com.springer.core.config.TestConfiguration;
 import com.springer.core.config.TestDataSetup;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -13,4 +14,6 @@ import javax.transaction.Transactional;
 @Transactional
 public abstract class BaseTest
 {
+	@Autowired
+	protected TestDataSetup testDataSetup;
 }
