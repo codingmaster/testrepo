@@ -1,14 +1,13 @@
 package com.springer.core.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
 public class Book extends Document
 {
+	@ElementCollection
+	@JoinTable(name="book_topics", joinColumns = @JoinColumn(name="book_id"))
 	@Column
 	@Enumerated(EnumType.STRING)
 	private List<Topic> topics;

@@ -1,10 +1,11 @@
 package com.springer.core.domain;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.OneToOne;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
-@MappedSuperclass
+import javax.persistence.*;
+
+@Entity
 public abstract class Document extends BaseEntity
 {
 	@Column
@@ -13,7 +14,9 @@ public abstract class Document extends BaseEntity
 	@Column
 	private String author;
 	
-	@OneToOne
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "watermark_id")
+	@NotFound(action = NotFoundAction.IGNORE)
 	private Watermark watermark;
 	
 	public String getTitle()
