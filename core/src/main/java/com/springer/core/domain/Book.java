@@ -1,11 +1,15 @@
 package com.springer.core.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@JsonDeserialize(as=Book.class)
 public class Book extends Document
 {
+	
 	@ElementCollection
 	@JoinTable(name="book_topics", joinColumns = @JoinColumn(name="book_id"))
 	@Column
@@ -21,4 +25,5 @@ public class Book extends Document
 	{
 		this.topics = topics;
 	}
+	
 }

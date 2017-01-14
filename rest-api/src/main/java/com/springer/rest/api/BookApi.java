@@ -11,10 +11,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/books")
-public class BookApi {
+public class BookApi extends BaseApi {
 	
 	@Autowired
 	private BookRepository bookRepository;
+	
 	
 	@Transactional
 	@RequestMapping(method = RequestMethod.POST)

@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BookRepository extends BaseRepository<Book>
 {
-	public Book findByAuthorAndTitle(String author, String title);
+	Book findByAuthorAndTitle(String author, String title);
 }

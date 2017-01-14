@@ -1,7 +1,6 @@
 package com.springer.core.domain;
 
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
+import com.sun.istack.internal.NotNull;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
@@ -9,9 +8,8 @@ import javax.persistence.OneToOne;
 @Entity
 public class Watermark extends BaseEntity
 {
-	
 	@OneToOne
-	@NotFound(action = NotFoundAction.IGNORE)
+	@NotNull
 	private Document document;
 	
 	public Document getDocument()

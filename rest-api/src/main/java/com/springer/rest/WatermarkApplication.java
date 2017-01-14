@@ -18,7 +18,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(basePackageClasses = BaseRepository.class)
 public class WatermarkApplication extends SpringBootServletInitializer
 {
-
+	
 	public static void main(String[] args) {
 		SpringApplication.run(WatermarkApplication.class, args);
 	}
