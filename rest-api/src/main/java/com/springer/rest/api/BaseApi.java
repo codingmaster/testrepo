@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -28,14 +27,14 @@ public abstract class BaseApi
 			Book book1 = new Book();
 			book1.setTitle("The Dark Code");
 			book1.setAuthor("Bruce Wayne");
-			book1.setTopics(Arrays.asList(Topic.SCIENCE));
+			book1.setTopic(Topic.SCIENCE);
 			
 			documents.add(book1);
 			
 			Book book2 = new Book();
 			book2.setTitle("How to make money");
 			book2.setAuthor("Dr. Evil");
-			book2.setTopics(Arrays.asList(Topic.BUSINESS));
+			book2.setTopic(Topic.BUSINESS);
 			
 			documents.add(book2);
 			

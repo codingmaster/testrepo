@@ -1,25 +1,33 @@
 package com.springer.rest.api;
 
 import com.springer.core.domain.Document;
+import com.springer.core.domain.Ticket;
 import com.springer.core.domain.Watermark;
+import com.springer.core.dto.TicketDto;
 import com.springer.core.dto.WatermarkDto;
 import com.springer.core.repository.DocumentRepository;
 import com.springer.core.repository.WatermarkRepository;
+import com.springer.core.service.WatermarkService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.concurrent.Future;
+
 @RestController
 @RequestMapping("api/v1/watermarks")
-public class WatermarkApi
+public class WatermarkApi extends BaseApi
 {
 	@Autowired
 	private WatermarkRepository watermarkRepository;
 	
 	@Autowired
 	private DocumentRepository documentRepository;
+	
+	@Autowired
+	private WatermarkService watermarkService;
 	
 	@Transactional(readOnly = true)
 	@RequestMapping(value = "{documentId}", method = RequestMethod.GET)
@@ -35,8 +43,8 @@ public class WatermarkApi
 	
 	@Transactional
 	@RequestMapping(value = "{documentId}", method = RequestMethod.POST)
-	@ResponseStatus(value = HttpStatus.CREATED)
-	public WatermarkDto create(@PathVariable long documentId) throws InstantiationException, IllegalAccessException, NotFoundException
+	@ResponseStatus(value = HttpStatus.OK)
+	public TicketDto create(@PathVariable long documentId) throws InstantiationException, IllegalAccessException, NotFoundException, InterruptedException
 	{
 		Document document = documentRepository.findOne(documentId);
 		if(document == null){
@@ -47,17 +55,15 @@ public class WatermarkApi
 	
 	@Transactional
 	@RequestMapping(method = RequestMethod.POST)
-	@ResponseStatus(value = HttpStatus.CREATED)
-	public WatermarkDto create(@RequestBody Document document) throws NotFoundException
+	@ResponseStatus(value = HttpStatus.OK)
+	public TicketDto create(@RequestBody Document document) throws NotFoundException, InterruptedException
 	{
 		if(document == null || document.getId() == null){
 			throw new NotFoundException("Document format is not recognised");
 		}
 		document = documentRepository.findOne(document.getId());
-		Watermark watermark = new Watermark();
-		watermark.setDocument(document);
-		watermark = watermarkRepository.save(watermark);
-		return new WatermarkDto(watermark);
+		Ticket ticket = watermarkService.createTicket(document);
+		final Future<Ticket> futureTicket = watermarkService.startWatermarking(ticket);
+		return new TicketDto(ticket);
 	}
-	
 }

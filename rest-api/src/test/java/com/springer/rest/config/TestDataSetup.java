@@ -3,8 +3,9 @@ package com.springer.rest.config;
 import com.springer.core.domain.Book;
 import com.springer.core.domain.Journal;
 import com.springer.core.domain.Topic;
-import org.assertj.core.util.Lists;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TestDataSetup
 {
 	public Book createBook(){
@@ -16,7 +17,7 @@ public class TestDataSetup
 		book.setAuthor(author);
 		book.setTitle(title);
 		book.setDtype("book");
-		book.setTopics(Lists.newArrayList(Topic.BUSINESS));
+		book.setTopic(Topic.BUSINESS);
 		return book;
 	}
 	

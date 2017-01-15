@@ -2,28 +2,27 @@ package com.springer.core.domain;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import javax.persistence.*;
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 @Entity
 @JsonDeserialize(as=Book.class)
 public class Book extends Document
 {
-	
-	@ElementCollection
-	@JoinTable(name="book_topics", joinColumns = @JoinColumn(name="book_id"))
 	@Column
 	@Enumerated(EnumType.STRING)
-	private List<Topic> topics;
+	private Topic topic;
 	
-	public List<Topic> getTopics()
+	public Topic getTopic()
 	{
-		return topics;
+		return topic;
 	}
 	
-	public void setTopics(List<Topic> topics)
+	public void setTopic(Topic topic)
 	{
-		this.topics = topics;
+		this.topic = topic;
 	}
 	
 }

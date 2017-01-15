@@ -5,8 +5,6 @@ import com.springer.core.domain.Document;
 import com.springer.core.domain.Journal;
 import com.springer.core.domain.Watermark;
 
-import java.util.StringJoiner;
-
 public class WatermarkDto
 {
 	private String content;
@@ -22,7 +20,7 @@ public class WatermarkDto
 		if(document instanceof Book){
 			Book book = (Book) document;
 			this.content = "book";
-			this.topic = book.getTopics().get(0).name();
+			this.topic = book.getTopic().name();
 		}
 		else if(document instanceof Journal){
 			this.content = "journal";
