@@ -8,5 +8,8 @@ import javax.persistence.Entity;
 @JsonDeserialize(as=Journal.class)
 public class Journal extends Document
 {
-
+	public Journal(){
+		super();
+		setDtype("journal");
+	}
 }

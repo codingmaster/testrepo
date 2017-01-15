@@ -2,6 +2,7 @@ package com.springer.rest.api;
 
 import com.springer.core.domain.Document;
 import com.springer.core.domain.Watermark;
+import com.springer.core.dto.WatermarkDto;
 import com.springer.core.repository.DocumentRepository;
 import com.springer.core.repository.WatermarkRepository;
 import javassist.NotFoundException;
@@ -23,25 +24,40 @@ public class WatermarkApi
 	@Transactional(readOnly = true)
 	@RequestMapping(value = "{documentId}", method = RequestMethod.GET)
 	@ResponseStatus(value = HttpStatus.OK)
-	public Watermark get(@PathVariable long documentId) throws InstantiationException, IllegalAccessException {
+	public WatermarkDto get(@PathVariable long documentId) throws InstantiationException, IllegalAccessException {
 		Document document = documentRepository.findOne(documentId);
 		Watermark watermark = watermarkRepository.findByDocument(document);
-		return watermark;
+		if(watermark == null){
+			return null;
+		}
+		return new WatermarkDto(watermark);
 	}
 	
-	@Transactional(readOnly = true)
+	@Transactional
 	@RequestMapping(value = "{documentId}", method = RequestMethod.POST)
-	@ResponseStatus(value = HttpStatus.OK)
-	public Watermark create(@PathVariable long documentId) throws InstantiationException, IllegalAccessException, NotFoundException
+	@ResponseStatus(value = HttpStatus.CREATED)
+	public WatermarkDto create(@PathVariable long documentId) throws InstantiationException, IllegalAccessException, NotFoundException
 	{
 		Document document = documentRepository.findOne(documentId);
 		if(document == null){
-			throw new NotFoundException("Document with id " +documentId + " wasn't found");
+			throw new NotFoundException("Document with id " + documentId + " wasn't found");
 		}
-		Watermark watermark = new Watermark();
-		watermark.setDocument(document);
-		return watermark;
+		return create(document);
 	}
 	
+	@Transactional
+	@RequestMapping(method = RequestMethod.POST)
+	@ResponseStatus(value = HttpStatus.CREATED)
+	public WatermarkDto create(@RequestBody Document document) throws NotFoundException
+	{
+		if(document == null || document.getId() == null){
+			throw new NotFoundException("Document format is not recognised");
+		}
+		document = documentRepository.findOne(document.getId());
+		Watermark watermark = new Watermark();
+		watermark.setDocument(document);
+		watermark = watermarkRepository.save(watermark);
+		return new WatermarkDto(watermark);
+	}
 	
 }

@@ -1,15 +1,12 @@
 package com.springer.core.domain;
 
-import com.sun.istack.internal.NotNull;
-
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
 @Entity
 public class Watermark extends BaseEntity
 {
-	@OneToOne
-	@NotNull
+	@OneToOne(optional = false)
 	private Document document;
 	
 	public Document getDocument()

@@ -19,11 +19,6 @@ public abstract class Document extends BaseEntity
 	@Column
 	private String author;
 	
-//	@ManyToOne(cascade = CascadeType.ALL)
-//	@JoinColumn(name = "watermark_id")
-//	@NotFound(action = NotFoundAction.IGNORE)
-//	private Watermark watermark;
-	
 	public String getTitle()
 	{
 		return title;
@@ -43,16 +38,6 @@ public abstract class Document extends BaseEntity
 	{
 		this.author = author;
 	}
-	
-//	public Watermark getWatermark()
-//	{
-//		return watermark;
-//	}
-//
-//	public void setWatermark(Watermark watermark)
-//	{
-//		this.watermark = watermark;
-//	}
 	
 	public String getDtype()
 	{

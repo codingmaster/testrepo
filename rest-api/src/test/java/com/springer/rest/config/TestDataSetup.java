@@ -8,26 +8,29 @@ import org.assertj.core.util.Lists;
 public class TestDataSetup
 {
 	public Book createBook(){
-		Book book = new Book();
-		book.setAuthor("Test Author");
-		book.setTitle("Test Book Title");
-		book.setTopics(Lists.newArrayList(Topic.BUSINESS));
-		return book;
+		return createBook("Test Author", "Test Book Title");
 	}
 	
 	public Book createBook(String author, String title){
 		Book book = new Book();
 		book.setAuthor(author);
 		book.setTitle(title);
+		book.setDtype("book");
 		book.setTopics(Lists.newArrayList(Topic.BUSINESS));
 		return book;
 	}
 	
 	public Journal createJournal()
 	{
+		return createJournal("Test Author", "Test Journal Title");
+	}
+	
+	public Journal createJournal(String author, String title)
+	{
 		Journal journal = new Journal();
-		journal.setTitle("Test Author");
-		journal.setAuthor("Test Journal Title");
+		journal.setTitle(title);
+		journal.setAuthor(author);
+		journal.setDtype("journal");
 		return journal;
 	}
 }

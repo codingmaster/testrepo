@@ -1,9 +1,12 @@
 package com.springer.rest.api;
 
 import com.springer.core.domain.Book;
+import com.springer.core.domain.Document;
 import com.springer.core.domain.Journal;
 import com.springer.core.domain.Watermark;
+import com.springer.core.dto.WatermarkDto;
 import com.springer.core.repository.BookRepository;
+import com.springer.core.repository.DocumentRepository;
 import com.springer.core.repository.JournalRepository;
 import com.springer.core.repository.WatermarkRepository;
 import org.junit.Test;
@@ -27,6 +30,9 @@ public class WatermarkApiTest extends BaseApiTest
 	JournalRepository journalRepository;
 	
 	@Autowired
+	DocumentRepository documentRepository;
+	
+	@Autowired
 	WatermarkRepository watermarkRepository;
 
 	@Test
@@ -41,30 +47,50 @@ public class WatermarkApiTest extends BaseApiTest
 		
 		watermarkRepository.save(watermark);
 		
-		ResponseEntity<Watermark> response = rest.getForEntity(BASE_URL + "/{documentId}", Watermark.class, port, book.getId());
+		ResponseEntity<WatermarkDto> response = rest.getForEntity(BASE_URL + "/{documentId}", WatermarkDto.class, port, book.getId());
 		assertEquals(HttpStatus.OK, response.getStatusCode());
-		watermark = response.getBody();
-		assertThat(watermark.getDocument(), equalTo(book));
+		WatermarkDto watermarkDto = response.getBody();
+		assertThat(watermarkDto.getTitle(), equalTo(book.getTitle()));
 	}
 	
 	@Test
-	public void create() throws Exception
+	public void createById() throws Exception
 	{
 		TestRestTemplate rest = new TestRestTemplate();
 		Book book = testDataSetup.createBook();
 		book = bookRepository.save(book);
 		
-		ResponseEntity<Watermark> response = rest.postForEntity(BASE_URL + "/{documentId}", book, Watermark.class, port, book.getId());
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		Watermark watermark = response.getBody();
-		assertThat(watermark.getDocument(), equalTo(book));
+		ResponseEntity<WatermarkDto> response = rest.postForEntity(BASE_URL + "/{documentId}", book, WatermarkDto.class, port, book.getId());
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		WatermarkDto watermark = response.getBody();
+		assertThat(watermark.getTitle(), equalTo(book.getTitle()));
 		
 		Journal journal = testDataSetup.createJournal();
 		journalRepository.save(journal);
 		
-		response = rest.postForEntity(BASE_URL + "/{documentId}", journal, Watermark.class, port, journal.getId());
-		assertEquals(HttpStatus.OK, response.getStatusCode());
+		response = rest.postForEntity(BASE_URL + "/{documentId}", journal, WatermarkDto.class, port, journal.getId());
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		watermark = response.getBody();
-		assertThat(watermark.getDocument(), equalTo(journal));
+		assertThat(watermark.getTitle(), equalTo(journal.getTitle()));
+	}
+	
+	@Test
+	public void createByDocument() throws Exception
+	{
+		TestRestTemplate rest = new TestRestTemplate();
+		Book book = testDataSetup.createBook();
+		book = documentRepository.save(book);
+		ResponseEntity<WatermarkDto> response = rest.postForEntity(BASE_URL, book, WatermarkDto.class, port);
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		WatermarkDto watermark = response.getBody();
+		assertThat(watermark.getTitle(), equalTo(book.getTitle()));
+		
+		Journal journal = testDataSetup.createJournal();
+		journal = journalRepository.save(journal);
+		
+		response = rest.postForEntity(BASE_URL, journal, WatermarkDto.class, port);
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		watermark = response.getBody();
+		assertThat(watermark.getTitle(), equalTo(journal.getTitle()));
 	}
 }
