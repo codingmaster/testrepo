@@ -12,14 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.concurrent.Future;
 
 @Service
 public class WatermarkService implements BaseService
 {
-	public static final long WATERMARKING_TIME = 30000L;
+	public static final long WATERMARKING_TIME = 10000L;
 	
 	private static final Logger LOG = LoggerFactory.getLogger(WatermarkService.class);
 	
@@ -30,7 +30,8 @@ public class WatermarkService implements BaseService
 	private WatermarkRepository watermarkRepository;
 	
 	@Transactional
-	public Ticket createTicket(Document document){
+	public Ticket createTicket(Document document)
+	{
 		Ticket ticket = new Ticket();
 		ticket.setDocument(document);
 		ticket.setStatus(Status.INITIATED);
@@ -46,31 +47,27 @@ public class WatermarkService implements BaseService
 		Double waitingTime = 0.0;
 		Long waitingStep = 1000L;
 		
-		LOG.info("Creating watermark for ticket : "  +ticket.getId());
-		while(waitingTime < WATERMARKING_TIME){
+		LOG.info("Creating watermark for ticket : " + ticket.getId());
+		while (waitingTime < WATERMARKING_TIME)
+		{
 			Thread.sleep(waitingStep);
-			waitingTime+=waitingStep;
+			waitingTime += waitingStep;
 			long progress = Math.round((waitingTime / WATERMARKING_TIME) * 100);
 			
-			updateProgress(ticket, progress);
-			LOG.info("Waiting for ticket "  +ticket.getId() + " progress " +  ticket.getProgress() + " status: " + ticket.getStatus());
+			ticket.setProgress(progress);
+			LOG.info("Waiting for ticket " + ticket.getDocument().getId() + " " + ticket.getStatus() + " " + ticket.getProgress() + "%");
 		}
 		
 		ticket.setStatus(Status.DONE);
 		
-		LOG.info("Watermarking for " + ticket.getId() + " finished ms... status: " + ticket.getStatus());
+		LOG.info("Watermarking for " + ticket.getDocument().getId() + " finished ms... status: " + ticket.getStatus());
 		Watermark watermark = new Watermark();
 		watermark.setDocument(ticket.getDocument());
 		
-		watermark = watermarkRepository.save(watermark);
 		ticket = ticketRepository.save(ticket);
+		watermark = watermarkRepository.save(watermark);
 		
 		return new AsyncResult<>(ticket);
 	}
 	
-	@Transactional
-	private void updateProgress(Ticket ticket, long progress)
-	{
-		ticket.setProgress(progress);
-	}
 }

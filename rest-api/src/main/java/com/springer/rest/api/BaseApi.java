@@ -18,32 +18,36 @@ public abstract class BaseApi
 {
 	@Autowired
 	DocumentRepository documentRepository;
+	private static final long MAX_DOCUMENTS = 10;
 	
 	@PostConstruct
 	@Transactional
 	public void init() {
 		if(documentRepository.count() == 0){
-			List<Document> documents = new ArrayList<>();
-			Book book1 = new Book();
-			book1.setTitle("The Dark Code");
-			book1.setAuthor("Bruce Wayne");
-			book1.setTopic(Topic.SCIENCE);
 			
-			documents.add(book1);
-			
-			Book book2 = new Book();
-			book2.setTitle("How to make money");
-			book2.setAuthor("Dr. Evil");
-			book2.setTopic(Topic.BUSINESS);
-			
-			documents.add(book2);
-			
-			Journal journal = new Journal();
-			journal.setAuthor("Clark Kent");
-			journal.setTitle("Journal of human flight routes");
-			documents.add(journal);
-			
-			documentRepository.save(documents);
+			while (documentRepository.count() < MAX_DOCUMENTS){
+				List<Document> documents = new ArrayList<>();
+				Book book1 = new Book();
+				book1.setTitle("The Dark Code");
+				book1.setAuthor("Bruce Wayne");
+				book1.setTopic(Topic.SCIENCE);
+				
+				documents.add(book1);
+				
+				Book book2 = new Book();
+				book2.setTitle("How to make money");
+				book2.setAuthor("Dr. Evil");
+				book2.setTopic(Topic.BUSINESS);
+				
+				documents.add(book2);
+				
+				Journal journal = new Journal();
+				journal.setAuthor("Clark Kent");
+				journal.setTitle("Journal of human flight routes");
+				documents.add(journal);
+				
+				documentRepository.save(documents);
+			}
 		}
 	}
 }

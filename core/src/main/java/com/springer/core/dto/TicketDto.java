@@ -5,17 +5,16 @@ import com.springer.core.domain.Ticket;
 
 public class TicketDto
 {
-	private Long progress;
 	private Long id;
+	private Long progress;
 	private Status status;
 	
 	public TicketDto(Ticket ticket)
 	{
-		if(ticket != null){
-			this.id = ticket.getId();
-			this.status = ticket.getStatus();
-			this.progress = ticket.getProgress();
-		}
+		this.id = ticket.getId();
+		this.status = ticket.getStatus();
+		this.progress = ticket.getProgress();
+		
 	}
 	
 	public TicketDto()

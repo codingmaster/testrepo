@@ -6,11 +6,13 @@ import com.springer.core.domain.Watermark;
 import com.springer.core.dto.TicketDto;
 import com.springer.core.dto.WatermarkDto;
 import com.springer.core.repository.DocumentRepository;
+import com.springer.core.repository.TicketRepository;
 import com.springer.core.repository.WatermarkRepository;
 import com.springer.core.service.WatermarkService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +31,9 @@ public class WatermarkApi extends BaseApi
 	@Autowired
 	private WatermarkService watermarkService;
 	
+	@Autowired
+	private TicketRepository ticketRepository;
+	
 	@Transactional(readOnly = true)
 	@RequestMapping(value = "{documentId}", method = RequestMethod.GET)
 	@ResponseStatus(value = HttpStatus.OK)
@@ -44,11 +49,11 @@ public class WatermarkApi extends BaseApi
 	@Transactional
 	@RequestMapping(value = "{documentId}", method = RequestMethod.POST)
 	@ResponseStatus(value = HttpStatus.OK)
-	public TicketDto create(@PathVariable long documentId) throws InstantiationException, IllegalAccessException, NotFoundException, InterruptedException
+	public ResponseEntity<TicketDto> create(@PathVariable long documentId) throws InstantiationException, IllegalAccessException, NotFoundException, InterruptedException
 	{
 		Document document = documentRepository.findOne(documentId);
 		if(document == null){
-			throw new NotFoundException("Document with id " + documentId + " wasn't found");
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		return create(document);
 	}
@@ -56,14 +61,22 @@ public class WatermarkApi extends BaseApi
 	@Transactional
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseStatus(value = HttpStatus.OK)
-	public TicketDto create(@RequestBody Document document) throws NotFoundException, InterruptedException
+	public ResponseEntity<TicketDto> create(@RequestBody Document document) throws NotFoundException, InterruptedException
 	{
 		if(document == null || document.getId() == null){
-			throw new NotFoundException("Document format is not recognised");
+			
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		document = documentRepository.findOne(document.getId());
+		
+		Watermark foundWatermark = watermarkRepository.findByDocument(document);
+		if(foundWatermark != null){
+			Ticket byDocument = ticketRepository.findByDocument(document);
+			return new ResponseEntity<TicketDto>(new TicketDto(byDocument), HttpStatus.OK);
+		}
+		
 		Ticket ticket = watermarkService.createTicket(document);
 		final Future<Ticket> futureTicket = watermarkService.startWatermarking(ticket);
-		return new TicketDto(ticket);
+		return new ResponseEntity<TicketDto>(new TicketDto(ticket), HttpStatus.OK);
 	}
 }

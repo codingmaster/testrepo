@@ -5,7 +5,9 @@ import javax.persistence.*;
 @Entity
 public class Ticket extends BaseEntity
 {
+	@Column
 	private Long progress;
+	
 	@Column
 	@Enumerated(EnumType.STRING)
 	private Status status;

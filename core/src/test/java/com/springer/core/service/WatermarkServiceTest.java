@@ -39,7 +39,7 @@ public class WatermarkServiceTest extends BaseTest
 		Ticket ticket = watermarkService.createTicket(book);
 		final Future<Ticket> future = watermarkService.startWatermarking(ticket);
 		
-		double maxWaitingTime = WATERMARKING_TIME * 0.95;
+		double maxWaitingTime = WATERMARKING_TIME * 0.9;
 		Long waitingTime = 0L;
 		Long waitingStep = 1000L;
 		

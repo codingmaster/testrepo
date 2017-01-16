@@ -73,7 +73,7 @@ public class WatermarkApiTest extends BaseApiTest
 		TicketDto ticket = response.getBody();
 		assertThat(ticket.getStatus(), equalTo(Status.INITIATED));
 		
-		double maxWaitingTime = WATERMARKING_TIME * 0.95;
+		double maxWaitingTime = WATERMARKING_TIME * 0.9;
 		Long waitingTime = 0L;
 		Long waitingStep = 1000L;
 		
