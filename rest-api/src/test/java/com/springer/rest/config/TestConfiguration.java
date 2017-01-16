@@ -1,6 +1,7 @@
 package com.springer.rest.config;
 
 import com.springer.core.config.AsyncConfig;
+import com.springer.core.config.PersistenceConfig;
 import com.springer.core.domain.BaseEntity;
 import com.springer.core.repository.BaseRepository;
 import com.springer.core.service.WatermarkService;
@@ -15,7 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @ActiveProfiles("test")
 @Configuration
-@Import(value = { DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class, WatermarkService.class, AsyncConfig.class})
+@Import(value = { DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class, WatermarkService.class, AsyncConfig.class, PersistenceConfig.class})
 @EntityScan(basePackageClasses = BaseEntity.class)
 @EnableJpaRepositories(basePackageClasses = BaseRepository.class)
 @EnableTransactionManagement

@@ -71,7 +71,7 @@ public class WatermarkApiTest extends BaseApiTest
 		ResponseEntity<TicketDto> response = rest.postForEntity(WATERMARK_URL, book, TicketDto.class, port);
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		TicketDto ticket = response.getBody();
-		assertThat(ticket.getStatus(), equalTo(Status.INITIATED));
+		assertThat(ticket.getStatus(), anyOf(equalTo(Status.INITIATED),equalTo(Status.PROCESSING)));
 		
 		double maxWaitingTime = WATERMARKING_TIME * 0.9;
 		Long waitingTime = 0L;
@@ -90,7 +90,7 @@ public class WatermarkApiTest extends BaseApiTest
 			assertEquals(HttpStatus.OK, response.getStatusCode());
 			ticket = response.getBody();
 			assertThat(ticket.getStatus(), equalTo(Status.PROCESSING));
-			LOG.info("TEST: Waiting " + waitingTime + "ms / " + maxWaitingTime + "ms... status: " + ticket.getStatus());
+			LOG.info("TEST: Waiting " + waitingTime + "ms / " + maxWaitingTime + "ms... status: " + ticket.getStatus() + " " + ticket.getProgress() + "%");
 		}
 		Thread.sleep(waitingStep*3);
 		watermarkResponse = rest.getForEntity(WATERMARK_URL + "/{documentId}", WatermarkDto.class, port, book.getId());

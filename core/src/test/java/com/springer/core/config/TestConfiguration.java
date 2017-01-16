@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @ActiveProfiles("test")
 @Configuration
-@Import(value = { DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class, WatermarkService.class, AsyncConfig.class})
+@Import(value = { DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class, WatermarkService.class, AsyncConfig.class, PersistenceConfig.class})
 @EntityScan(basePackageClasses = BaseEntity.class)
 @EnableJpaRepositories(basePackageClasses = BaseRepository.class)
 @EnableTransactionManagement

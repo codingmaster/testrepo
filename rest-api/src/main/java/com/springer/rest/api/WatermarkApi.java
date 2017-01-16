@@ -16,8 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.concurrent.Future;
-
 @RestController
 @RequestMapping("api/v1/watermarks")
 public class WatermarkApi extends BaseApi
@@ -58,7 +56,6 @@ public class WatermarkApi extends BaseApi
 		return create(document);
 	}
 	
-	@Transactional
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<TicketDto> create(@RequestBody Document document) throws NotFoundException, InterruptedException
@@ -76,7 +73,7 @@ public class WatermarkApi extends BaseApi
 		}
 		
 		Ticket ticket = watermarkService.createTicket(document);
-		final Future<Ticket> futureTicket = watermarkService.startWatermarking(ticket);
+		watermarkService.startWatermarking(ticket);
 		return new ResponseEntity<TicketDto>(new TicketDto(ticket), HttpStatus.OK);
 	}
 }

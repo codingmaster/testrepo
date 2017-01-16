@@ -10,11 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.concurrent.Future;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @Service
 public class WatermarkService implements BaseService
@@ -29,19 +27,24 @@ public class WatermarkService implements BaseService
 	@Autowired
 	private WatermarkRepository watermarkRepository;
 	
+	@Autowired
+	private TransactionTemplate transactionTemplate;
+	
 	@Transactional
 	public Ticket createTicket(Document document)
 	{
 		Ticket ticket = new Ticket();
 		ticket.setDocument(document);
 		ticket.setStatus(Status.INITIATED);
+		ticket.setProgress(0L);
 		ticket = ticketRepository.save(ticket);
 		return ticket;
 	}
 	
 	@Async
-	public Future<Ticket> startWatermarking(Ticket ticket) throws InterruptedException
+	public void startWatermarking(Ticket ticket) throws InterruptedException
 	{
+		Document document = ticket.getDocument();
 		ticket.setStatus(Status.PROCESSING);
 		
 		Double waitingTime = 0.0;
@@ -54,20 +57,28 @@ public class WatermarkService implements BaseService
 			waitingTime += waitingStep;
 			long progress = Math.round((waitingTime / WATERMARKING_TIME) * 100);
 			
-			ticket.setProgress(progress);
-			LOG.info("Waiting for ticket " + ticket.getDocument().getId() + " " + ticket.getStatus() + " " + ticket.getProgress() + "%");
+			transactionTemplate.execute(transactionStatus -> {
+				ticket.setProgress(progress);
+				Ticket result = ticketRepository.save(ticket);
+				LOG.info("WATERMARKING: for " + document.getId() + " " + result.getStatus() + " " + result.getProgress() + "%");
+				return result;
+			});
 		}
 		
 		ticket.setStatus(Status.DONE);
 		
-		LOG.info("Watermarking for " + ticket.getDocument().getId() + " finished ms... status: " + ticket.getStatus());
+		LOG.info("WATERMARKING: for " + document.getId() + " " + ticket.getStatus());
 		Watermark watermark = new Watermark();
-		watermark.setDocument(ticket.getDocument());
+		watermark.setDocument(document);
 		
-		ticket = ticketRepository.save(ticket);
-		watermark = watermarkRepository.save(watermark);
-		
-		return new AsyncResult<>(ticket);
+		ticketRepository.save(ticket);
+		watermarkRepository.save(watermark);
 	}
 	
+	public Ticket executeWatermarking(Document document) throws InterruptedException
+	{
+		Ticket ticket = createTicket(document);
+		startWatermarking(ticket);
+		return ticket;
+	}
 }
